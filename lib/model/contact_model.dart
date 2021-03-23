@@ -21,19 +21,33 @@ class ContactModel {
   });
 
   // ContactModel();
+  static Map<String, dynamic> toMap(ContactModel contactModel) => {
+        'name': contactModel.name,
+        'image': contactModel.image,
+        'uid': contactModel.uid,
+        'message': contactModel.message,
+        'status': contactModel.status,
+        'statusTime': contactModel.statusTime,
+        'type': contactModel.type,
+        'statusColors': contactModel.statusColors,
+        'statusFonts': contactModel.statusFonts,
+        'statusTexts': contactModel.statusTexts,
+      };
 
-  // ContactModel.fromJson(Map<String, dynamic> json)
-  //     : name = json['name'],
-  //       image = json['image'],
-  //       status = json['status'],
-  //       message = json['message'],
-  //       uid = json['uid'],
-  //       statusColors = json['statusColors'],
-  //       statusFonts = json['statusFonts'],
-  //       statusTime = json['statusTime'],
-  //       statusTexts = json['statusTexts'],
-  //       type = json['type'];
-
+  factory ContactModel.fromJson(Map<String, dynamic> jsonData) {
+    return ContactModel(
+      name: jsonData['name'],
+      image: jsonData['image'],
+      uid: jsonData['uid'],
+      message: jsonData['message'],
+      status: jsonData['status'],
+      statusTime: jsonData['statusTime'],
+      type: jsonData['type'],
+      statusColors: jsonData['statusColors'],
+      statusFonts: jsonData['statusFonts'],
+      statusTexts: jsonData['statusTexts'],
+    );
+  }
   // Map<String, dynamic> toJson() => {
   //       'name': name,
   //       'image': image,

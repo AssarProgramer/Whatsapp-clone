@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:ui';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:whatsapp_clone/config/colors.dart';
 import 'package:whatsapp_clone/model/contact_model.dart';
 import 'package:whatsapp_clone/widgets/chat_item.dart';
@@ -122,9 +124,10 @@ class _ContactsPageState extends State<ContactsPage> {
                         );
                       },
                       child: ChatItem(
-                        image: widget.contactMessageList[index].image==null?NetworkImage(
-                          widget.contactMessageList[index].image??''
-                        ):AssetImage('assets/profile_default.png'),
+                        image: widget.contactMessageList[index].image == null
+                            ? NetworkImage(
+                                widget.contactMessageList[index].image ?? '')
+                            : AssetImage('assets/profile_default.png'),
                         title: widget.contactMessageList[index].name,
                         divider: Container(),
                         fontWeight: FontWeight.bold,

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -21,6 +22,7 @@ import '../model/contact_model.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../camera/page/camera_tab_page.dart';
 import '../setting_pages/settings_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   final initialIndex;
@@ -102,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen>
     ContactModel contactModel;
 
     // //  List<Contact> _contacts = (await ContactsService.getContacts()).toList();
-    await Contacts.streamContacts().forEach((contact) {
+    await Contacts.streamContacts().forEach((contact) async {
       contact.phones.forEach((contactsDataNumber) async {
         QuerySnapshot querySnapShot =
             await FirebaseFirestore.instance.collection("users").get();
@@ -128,6 +130,7 @@ class _HomeScreenState extends State<HomeScreen>
                 statusTexts: querySnapShotData.data()['statusTexts'],
                 message: "Hey! I Am Using Pak1",
               );
+
               contactMessageList.add(contactModel);
             });
           }

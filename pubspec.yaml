@@ -45,6 +45,7 @@ dependencies:
   cached_network_image: ^2.5.1
   photo_view:
   agora_rtc_engine:
+  shared_preferences: 
 
 dev_dependencies:
   flutter_test:

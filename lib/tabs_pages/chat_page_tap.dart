@@ -1,6 +1,10 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:whatsapp_clone/chat/chat.dart';
 import 'package:whatsapp_clone/config/colors.dart';
 import 'package:whatsapp_clone/config/user_provider.dart';
@@ -21,8 +25,10 @@ class _ChatPageTabState extends State<ChatPageTab> {
   UserProvider userProviders;
   User currectUser = FirebaseAuth.instance.currentUser;
   bool isSees = false;
+  List<ContactModel> chatList;
+  int myIndex;
   Widget buildItem(BuildContext context, var document, int index) {
-    if (widget.contactMessageList[index].uid == currectUser.uid) {
+    if (chatList[index].uid == currectUser.uid) {
       return Container();
     } else {
       return Container(
@@ -31,7 +37,7 @@ class _ChatPageTabState extends State<ChatPageTab> {
             children: <Widget>[
               Material(
                 color: Colors.grey,
-                child: widget.contactMessageList[index].image != null
+                child: chatList[index].image != null
                     ? CachedNetworkImage(
                         placeholder: (context, url) => Container(
                           child: CircularProgressIndicator(
@@ -41,7 +47,7 @@ class _ChatPageTabState extends State<ChatPageTab> {
                           height: 50.0,
                           padding: EdgeInsets.all(15.0),
                         ),
-                        imageUrl: widget.contactMessageList[index].image,
+                        imageUrl: chatList[index].image,
                         width: 50.0,
                         height: 50.0,
                         fit: BoxFit.cover,
@@ -59,14 +65,14 @@ class _ChatPageTabState extends State<ChatPageTab> {
                     children: <Widget>[
                       Container(
                         child: Text(
-                          widget.contactMessageList[index].name,
+                          chatList[index].name,
                         ),
                         alignment: Alignment.centerLeft,
                         margin: EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 5.0),
                       ),
                       Container(
                         child: Text(
-                          widget.contactMessageList[index].message,
+                          chatList[index].message,
                         ),
                         alignment: Alignment.centerLeft,
                         margin: EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 0.0),
@@ -87,10 +93,10 @@ class _ChatPageTabState extends State<ChatPageTab> {
               MaterialPageRoute(
                 builder: (context) => ChatScreen(
                   isSees: true,
-                  peerId:  document[index].uid,
+                  peerId: document[index].uid,
                   peerAvatar: document[index].image,
                   users: document[index].name,
-                  list: widget.contactMessageList,
+                  list: chatList,
                 ),
               ),
             );
@@ -105,20 +111,53 @@ class _ChatPageTabState extends State<ChatPageTab> {
   }
 
   Widget userLists() {
-    return userProviders.getContactList == null
-        ? Center(
-            child: Text("No One Found"),
-          )
-        : Card(
-            color: scaffoldBgColor,
-            elevation: 0.0,
-            child: ListView.builder(
-                shrinkWrap: true,
-                primary: false,
-                itemCount: userProviders.getContactList.length,
-                itemBuilder: (ctx, index) => buildItem(context,
-                    userProviders.getContactList, userProviders.getIndex)),
-          );
+    if (chatList == null) {
+      return Center(
+        child: Text("No One Found"),
+      );
+    } else if (myIndex == null) {
+      print("Oh-------------------");
+
+      return Container();
+    } else if (chatList != null) {
+      print("No-------------------");
+
+      return Card(
+        color: scaffoldBgColor,
+        elevation: 0.0,
+        child: ListView.builder(
+          shrinkWrap: true,
+          primary: false,
+          itemCount: chatList.length,
+          itemBuilder: (ctx, index) => buildItem(context, chatList, myIndex),
+        ),
+      );
+    }
+    return Container();
+  }
+
+  @override
+  void initState() {
+    getContact();
+    super.initState();
+  }
+
+  static List<ContactModel> decode(String musics) =>
+      (json.decode(musics) as List<dynamic>)
+          .map<ContactModel>((item) => ContactModel.fromJson(item))
+          .toList();
+
+  void getContact() async {
+    print("Yesssss");
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      String contact = prefs.getString(
+        "contactList",
+      );
+      myIndex = prefs.getInt("index");
+      chatList = decode(contact);
+    });
   }
 
   @override
